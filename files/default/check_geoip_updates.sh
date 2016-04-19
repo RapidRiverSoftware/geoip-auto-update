@@ -27,8 +27,8 @@ for new_file in tmp_download/*; do
 done
 
 if [ $notify_callbacks -eq 1 ]; then
-  for callback in callback.d/*; do
-    source $callback
+  for callback in "$WORKING_DIR/callback.d/*"; do
+    $callback
   done
 fi
 

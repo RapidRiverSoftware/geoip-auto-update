@@ -3,7 +3,7 @@ default_action :create
 
 attribute :target_dir, kind_of: String, required: true, name_attribute: true
 
-attribute :owner, kind_of: String
+attribute :user, kind_of: String
 attribute :group, kind_of: String
 
 attribute :maxmind_user_id, kind_of: [Integer, String], required: true
@@ -13,7 +13,6 @@ attribute :maxmind_product_ids, kind_of: Array, required: true
 attribute :install_utilities, kind_of: [TrueClass, FalseClass], default: false
 attribute :install_dev_files, kind_of: [TrueClass, FalseClass], default: false
 
-attribute :cron_user, kind_of: String
 attribute :cron_mailto, kind_of: String
 
 attribute :cron_day, kind_of: [Integer, String]

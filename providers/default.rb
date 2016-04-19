@@ -10,28 +10,28 @@ end
 
 def create_geoip_auto_update
   directory new_resource.name do
-    owner new_resource.owner
+    owner new_resource.user
     group new_resource.group
     recursive true
     notifies :run, 'execute[geoipupdate]', :delayed
   end
 
   directory "#{new_resource.name}/callback.d" do
-    owner new_resource.owner
+    owner new_resource.user
     group new_resource.group
     recursive true
   end
 
   file "#{new_resource.name}/callback.d/example.sh" do
     content '# add callback scripts to this directory to be run when GeoIP database products are updated'
-    owner new_resource.owner
+    owner new_resource.user
     group new_resource.group
+    mode 0755
   end
 
-  current_distribution = `lsb_release -a 2> /dev/null | grep 'Codename' | awk '{print $2}'`.chomp
   apt_repository 'maxmind' do
     uri 'ppa:maxmind'
-    distribution current_distribution
+    distribution node[:lsb][:codename]
   end
 
   package 'geoipupdate'
@@ -40,7 +40,7 @@ def create_geoip_auto_update
 
   template "#{new_resource.name}/geoipupdate.conf" do
     cookbook 'geoip_auto_update'
-    owner new_resource.owner
+    owner new_resource.user
     group new_resource.group
     mode 0660
     variables({
@@ -53,14 +53,14 @@ def create_geoip_auto_update
 
   cookbook_file "#{new_resource.name}/check_geoip_updates.sh" do
     cookbook 'geoip_auto_update'
-    owner new_resource.owner
+    owner new_resource.user
     group new_resource.group
     mode 0755
     notifies :run, 'execute[geoipupdate]', :delayed
   end
 
   cron 'geoipupdate' do
-    user new_resource.cron_user
+    user new_resource.user
     mailto new_resource.cron_mailto
     day new_resource.cron_day
     hour new_resource.cron_hour
@@ -75,7 +75,7 @@ def create_geoip_auto_update
 
   execute 'geoipupdate' do
     command "#{new_resource.name}/check_geoip_updates.sh"
-    user new_resource.owner
+    user new_resource.user
     group new_resource.group
     environment({
       'WORKING_DIR' => new_resource.name,
