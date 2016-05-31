@@ -22,6 +22,7 @@ for new_file in tmp_download/*; do
   if [ "$new_hash" != "$current_hash" ]; then
     echo "updating $current_file"
     cp -f $new_file $current_file
+    chmod 644 $current_file
     notify_callbacks=1
   fi
 done
